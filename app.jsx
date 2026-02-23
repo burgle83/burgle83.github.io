@@ -325,7 +325,7 @@ function SchedulePg({st,persist}){
   const getLog=(mi,tid)=>st.logs.find(l=>l.milestoneLinked===mi&&l.taskId===tid);
   const allDone=mi=>{const s=SCHEDULE.find(x=>x.miles===mi);return s&&s.items.every(i=>getLog(mi,i.id))};
   const saveTask=log=>{persist({...st,logs:[log,...st.logs]});setActTask(null)};
-  const delTask=(mi,tid)=>persist({...st,logs:st.logs.filter(l=>!(l.milestoneLinked===mi&&l.taskId===tid))});
+  const delTask=(mi,tid)=>{if(confirm("Delete this log entry?"))persist({...st,logs:st.logs.filter(l=>!(l.milestoneLinked===mi&&l.taskId===tid))});};
 
   return(
     <div>
@@ -394,7 +394,7 @@ function LogPg({st,persist}){
   const addPart=()=>setF({...f,parts:[...f.parts,""]});
   const rmPart=i=>{if(f.parts.length<=1)return;const p=[...f.parts];p.splice(i,1);setF({...f,parts:p})};
   const add=()=>{if(!f.date||!f.taskName)return;const product=f.parts.filter(p=>p.trim()).join(" · ");persist({...st,logs:[{...f,product,id:Date.now(),milestoneLinked:f.milestoneLinked?parseInt(f.milestoneLinked):null,taskId:"manual-"+Date.now()},...st.logs]});setF({date:new Date().toISOString().split("T")[0],odometer:"",milestoneLinked:"",taskName:"",parts:[""],notes:"",cost:"",receiptImg:null});setShow(false)};
-  const del=id=>persist({...st,logs:st.logs.filter(l=>l.id!==id)});
+  const del=id=>{if(confirm("Delete this log entry?"))persist({...st,logs:st.logs.filter(l=>l.id!==id)})};
   const ms=[...new Set(st.logs.map(l=>l.milestoneLinked).filter(Boolean))].sort((a,b)=>a-b);
   const fl=filt==="all"?st.logs:filt==="other"?st.logs.filter(l=>!l.milestoneLinked):st.logs.filter(l=>l.milestoneLinked===parseInt(filt));
 
